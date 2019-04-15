@@ -4,11 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.opengl.GLException;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +23,7 @@ public class PlainView extends View {
     private List<PlainViewDisplayable> objectsToDisplay;
 
     private ScaleGestureDetector scaleGestureDetector;
+    private GestureDetector gestureDetector;
 
     public PlainView(Context context) {
         super(context);
@@ -38,9 +42,9 @@ public class PlainView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Paint myPaint = new Paint();
+        /*Paint myPaint = new Paint();
         myPaint.setTextSize(15);
-        canvas.drawText("test1", 10,100,myPaint );
+        canvas.drawText("test1", 10,100,myPaint );*/
         canvas.save();
         canvas.scale(zoomLevel,zoomLevel);
         displayObject(canvas);
@@ -50,11 +54,13 @@ public class PlainView extends View {
     private void Init(Context context, AttributeSet set){
         objectsToDisplay = new LinkedList<PlainViewDisplayable>();
         scaleGestureDetector = new ScaleGestureDetector(context, new ScaleListener());
+        gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         scaleGestureDetector.onTouchEvent(event);
+        gestureDetector.onTouchEvent(event);
         return true;
     }
 
@@ -70,15 +76,15 @@ public class PlainView extends View {
             int imageWhereToDisplayLeftPosition = (int)(positionImageX - currX);
             int imageWhereToDisplayRightPosition = imageWhereToDisplayLeftPosition
                     + imageToDisplayRightPosition - imageToDisplayLeftPosition;
-            int imageWhereToDisplayTopPosition = (int)(positionImageY - currY);
+            int imageWhereToDisplayTopPosition = (int)(positionImageY + currY);
             int imageWhereToDisplayBottomPosition = imageWhereToDisplayTopPosition
                     + imageToDisplayBottomPosition - imageToDisplayTopPosition;
 
             canvas.drawBitmap(objectToDisplay.getBitmap(),
                     new Rect(imageToDisplayLeftPosition,imageToDisplayTopPosition,
                             imageToDisplayRightPosition, imageToDisplayBottomPosition),
-                    new Rect(imageToDisplayLeftPosition,imageToDisplayTopPosition,
-                            imageToDisplayRightPosition,imageToDisplayBottomPosition),null);
+                    new Rect(imageWhereToDisplayLeftPosition,imageWhereToDisplayTopPosition,
+                            imageWhereToDisplayRightPosition,imageWhereToDisplayBottomPosition),null);
         }
 
     }
@@ -95,6 +101,16 @@ public class PlainView extends View {
             zoomLevel = Math.max(0.1f,Math.min(zoomLevel,5.0f));
             invalidate();
             return true;
+        }
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener{
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+           currX += distanceX/zoomLevel;
+           currY -= distanceY/zoomLevel;
+           invalidate();
+           return true;
         }
     }
 
