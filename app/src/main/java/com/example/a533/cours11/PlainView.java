@@ -125,7 +125,9 @@ public class PlainView extends View {
 
     private void Addmarker(MotionEvent event){
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.marqueur);
-        addElementToDisplay(new Marqueur(bitmap, (int)(event.getX()/zoomLevel), (int)(event.getY()/zoomLevel)));
+        addElementToDisplay(new Marqueur(bitmap,
+                (int)(event.getX()/zoomLevel),
+                (int)(event.getY()/zoomLevel)));
 
     }
 
