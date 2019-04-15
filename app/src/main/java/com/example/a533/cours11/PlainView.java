@@ -1,6 +1,8 @@
 package com.example.a533.cours11;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -24,6 +26,8 @@ public class PlainView extends View {
 
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+
+    private Marqueur marqueur;
 
     public PlainView(Context context) {
         super(context);
@@ -112,6 +116,18 @@ public class PlainView extends View {
            invalidate();
            return true;
         }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            Addmarker(e);
+        }
     }
+
+    private void Addmarker(MotionEvent event){
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.marqueur);
+        addElementToDisplay(new Marqueur(bitmap, (int)(event.getX()/zoomLevel), (int)(event.getY()/zoomLevel)));
+
+    }
+
 
 }

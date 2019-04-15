@@ -20,7 +20,4 @@ public class MainActivity extends AppCompatActivity {
         PlainView plainView = findViewById(R.id.planView);
         plainView.addElementToDisplay(new Plan(planBitmap));
     }
-
-
-
 }
